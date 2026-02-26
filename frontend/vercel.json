@@ -1,6 +1,0 @@
-{
-  "buildCommand": "npm run build",
-  "framework": "vite",
-  "outputDirectory": "dist",
-  "ignoreCommand": "git diff --quiet HEAD"
-}
