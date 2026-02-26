@@ -1,85 +1,55 @@
 import { clsx } from 'clsx';
 import { Thermometer, Droplets, Wind, Eye } from 'lucide-react';
 
-function StatCard({ icon: Icon, label, value, unit, color, dark, trend }) {
+function StatCard({ icon: Icon, label, value, unit, color }) {
     return (
-        <div className={clsx(
-            'relative rounded-2xl p-5 card-hover overflow-hidden transition-all duration-300',
-            dark
-                ? 'bg-[#161b22]/80 border border-[#21262d] hover:border-green-500/30'
-                : 'bg-white/70 border border-white/60 hover:border-green-300',
-            'glass'
-        )}>
-            {/* Background blob */}
-            <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full opacity-10"
-                style={{ background: color }} />
-
-            <div className="flex items-start justify-between">
-                <div className={clsx(
-                    'w-10 h-10 rounded-xl flex items-center justify-center',
-                )} style={{ background: `${color}20` }}>
-                    <Icon className="w-5 h-5" style={{ color }} />
-                </div>
-                {trend && (
-                    <span className={clsx(
-                        'text-xs font-semibold px-2 py-0.5 rounded-full',
-                        trend > 0
-                            ? 'bg-red-500/10 text-red-400'
-                            : 'bg-green-500/10 text-green-400'
-                    )}>
-                        {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}{unit}
-                    </span>
-                )}
+        <div className="flex flex-col items-center justify-center p-4 border border-dark-border bg-dark-bg/20 rounded-xl transition-all duration-300 hover:border-neon/30">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-dark-bg border border-dark-border mb-2">
+                <Icon className="w-4 h-4 text-neon" />
             </div>
-
-            <div className="mt-3">
-                <p className="text-3xl font-bold" style={{ color }}>
-                    {value}
-                    <span className="text-lg font-medium ml-1 opacity-70">{unit}</span>
-                </p>
-                <p className={clsx('text-sm mt-1 font-medium', dark ? 'text-gray-400' : 'text-gray-500')}>{label}</p>
+            <p className="text-xl font-black text-white leading-none">
+                {value}<span className="text-[10px] font-bold ml-0.5 opacity-60 uppercase">{unit}</span>
+            </p>
+            <div className="flex flex-col items-center mt-2">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-dark-muted leading-tight">{label}</span>
             </div>
         </div>
     );
 }
 
-export default function ClimateCards({ temperature, humidity, dark }) {
+export default function ClimateCards({ temperature, humidity }) {
     return (
-        <div className="grid grid-cols-2 gap-4">
-            <StatCard
-                icon={Thermometer}
-                label="Temperature"
-                value={temperature}
-                unit="°C"
-                color="#f59e0b"
-                dark={dark}
-                trend={temperature > 30 ? +2 : -1}
-            />
-            <StatCard
-                icon={Droplets}
-                label="Humidity"
-                value={humidity}
-                unit="%"
-                color="#3b82f6"
-                dark={dark}
-                trend={humidity > 60 ? +3 : -2}
-            />
-            <StatCard
-                icon={Wind}
-                label="Wind Speed"
-                value="14"
-                unit="km/h"
-                color="#8b5cf6"
-                dark={dark}
-            />
-            <StatCard
-                icon={Eye}
-                label="UV Index"
-                value="6"
-                unit=" UV"
-                color="#ef4444"
-                dark={dark}
-            />
+        <div className="rounded-2xl p-5 border border-dark-border bg-dark-card transition-all duration-200 overflow-hidden shadow-xl h-full flex flex-col">
+            <div className="flex flex-col mb-4">
+                <span className="text-xs font-bold uppercase tracking-widest text-dark-muted">Weather Overview</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 flex-grow">
+                <StatCard
+                    icon={Thermometer}
+                    label="Temperature"
+                    value={temperature}
+                    unit="°C"
+                />
+                <StatCard
+                    icon={Droplets}
+                    label="Humidity"
+                    value={humidity}
+                    unit="%"
+                />
+                <StatCard
+                    icon={Wind}
+                    label="Wind Speed"
+                    value="14"
+                    unit="km/h"
+                />
+                <StatCard
+                    icon={Eye}
+                    label="UV Index"
+                    value="6"
+                    unit="UV"
+                />
+            </div>
         </div>
     );
 }

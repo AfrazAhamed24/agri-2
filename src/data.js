@@ -7,10 +7,10 @@ export const fields = [
 ];
 
 export const sensorDefaults = {
-    f1: { moisture: 62, temperature: 28, humidity: 65, tankLevel: 74, pumpOn: true },
-    f2: { moisture: 38, temperature: 31, humidity: 70, tankLevel: 45, pumpOn: false },
-    f3: { moisture: 80, temperature: 25, humidity: 78, tankLevel: 88, pumpOn: false },
-    f4: { moisture: 22, temperature: 33, humidity: 50, tankLevel: 20, pumpOn: true },
+    f1: { moisture: 62, temperature: 28, humidity: 65, tankLevel: 74, pumpOn: true, runtimeToday: 147, waterUsed: 1764 },
+    f2: { moisture: 38, temperature: 31, humidity: 70, tankLevel: 45, pumpOn: false, runtimeToday: 85, waterUsed: 1020 },
+    f3: { moisture: 80, temperature: 25, humidity: 78, tankLevel: 88, pumpOn: false, runtimeToday: 12, waterUsed: 144 },
+    f4: { moisture: 22, temperature: 33, humidity: 50, tankLevel: 20, pumpOn: true, runtimeToday: 210, waterUsed: 2520 },
 };
 
 export const generateHistory = () => {
@@ -92,25 +92,31 @@ export const getAIRecommendations = (field, moisture, temperature, humidity) => 
 
 export const getAlerts = (moisture, temperature, humidity, tankLevel) => {
     const alerts = [];
+
+    // Check for Leak first (priority)
+    if (tankLevel < 10) {
+        alerts.push({ level: 'red', msg: 'LEAK DETECTED', priority: true });
+    }
+
     if (tankLevel < 25)
-        alerts.push({ level: 'red', msg: `Water tank critically low (${tankLevel}%) – refill immediately` });
+        alerts.push({ level: 'red', msg: `Water tank critically low (${tankLevel}%)` });
     else if (tankLevel < 40)
-        alerts.push({ level: 'yellow', msg: `Water tank at ${tankLevel}% – schedule refill soon` });
+        alerts.push({ level: 'yellow', msg: `Water tank at ${tankLevel}%` });
 
     if (moisture < 25)
-        alerts.push({ level: 'red', msg: `Critical: Soil moisture at ${moisture}% – crops at risk` });
+        alerts.push({ level: 'red', msg: `Critical: Soil moisture at ${moisture}%` });
     else if (moisture < 40)
         alerts.push({ level: 'yellow', msg: `Low soil moisture detected: ${moisture}%` });
     else
         alerts.push({ level: 'green', msg: `Soil moisture healthy: ${moisture}%` });
 
     if (temperature > 38)
-        alerts.push({ level: 'red', msg: `Extreme heat alert: ${temperature}°C – protect crops` });
+        alerts.push({ level: 'red', msg: `Extreme heat alert: ${temperature}°C` });
     else if (temperature > 33)
-        alerts.push({ level: 'yellow', msg: `High temperature: ${temperature}°C – monitor closely` });
+        alerts.push({ level: 'yellow', msg: `High temperature: ${temperature}°C` });
 
     if (humidity < 35)
-        alerts.push({ level: 'yellow', msg: `Low humidity: ${humidity}% – leaf stress possible` });
+        alerts.push({ level: 'yellow', msg: `Low humidity: ${humidity}%` });
 
     return alerts;
 };

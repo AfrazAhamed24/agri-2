@@ -2,71 +2,89 @@ import { clsx } from 'clsx';
 import { Power, Zap, Clock, DropletIcon } from 'lucide-react';
 import { useState } from 'react';
 
-export default function PumpControl({ pumpOn, onToggle, dark }) {
-    const [runtime, setRuntime] = useState(147); // minutes today
+export default function PumpControl({ pumpOn, onToggle, flowRate = 0, runtimeToday = 0, waterUsed = 0, dark }) {
+    const powerDraw = pumpOn ? 2.4 : 0; // kW when active
 
     return (
-        <div className={clsx(
-            'rounded-2xl p-5 glass card-hover',
-            dark ? 'bg-[#161b22]/80 border border-[#21262d]' : 'bg-white/70 border border-white/60'
-        )}>
-            <h3 className={clsx('text-sm font-semibold uppercase tracking-wide mb-4', dark ? 'text-gray-400' : 'text-gray-500')}>
-                Pump Control
-            </h3>
+        <div className="rounded-2xl p-5 border border-dark-border bg-dark-card transition-all duration-200 overflow-hidden shadow-xl">
+            <div className="flex flex-col mb-4">
+                <span className="text-xs font-bold uppercase tracking-widest text-dark-muted">Pump Control</span>
+            </div>
 
             <div className="flex items-center justify-between">
                 {/* Status */}
                 <div className="flex items-center gap-3">
                     <div className={clsx(
-                        'w-14 h-14 rounded-2xl flex items-center justify-center relative',
-                        pumpOn ? 'bg-green-500/20' : dark ? 'bg-gray-800' : 'bg-gray-100'
+                        'w-14 h-14 rounded-xl flex items-center justify-center relative border',
+                        pumpOn ? 'bg-neon/10 border-neon' : 'bg-dark-bg border-dark-border'
                     )}>
                         {pumpOn && (
-                            <span className="absolute inset-0 rounded-2xl bg-green-500/20 animate-ping" />
+                            <span className="absolute inset-0 rounded-xl bg-neon/20 animate-ping" />
                         )}
-                        <Power className={clsx('w-7 h-7', pumpOn ? 'text-green-400' : 'text-gray-400')} />
+                        <Power className={clsx('w-6 h-6', pumpOn ? 'text-neon' : 'text-dark-muted')} />
                     </div>
                     <div>
-                        <p className={clsx('text-xl font-bold', pumpOn ? 'text-green-400' : dark ? 'text-gray-400' : 'text-gray-500')}>
+                        <p className={clsx('text-xl font-black tracking-tight', pumpOn ? 'text-neon' : 'text-dark-muted')}>
                             {pumpOn ? 'RUNNING' : 'STOPPED'}
                         </p>
-                        <p className={clsx('text-xs', dark ? 'text-gray-500' : 'text-gray-400')}>
-                            Main irrigation pump
+                        <p className="text-[10px] uppercase font-bold text-dark-muted tracking-tighter">
+                            Main System Pump
                         </p>
                     </div>
                 </div>
 
-                {/* Toggle */}
+                {/* Large Tactile Toggle */}
                 <button
                     onClick={onToggle}
                     className={clsx(
-                        'relative w-16 h-8 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2',
-                        pumpOn ? 'bg-green-500' : dark ? 'bg-gray-700' : 'bg-gray-300',
-                        dark ? 'focus:ring-offset-gray-900' : 'focus:ring-offset-white'
+                        'relative w-20 h-10 rounded-full transition-all duration-300 focus:outline-none shadow-inner',
+                        pumpOn ? 'bg-neon' : 'bg-dark-bg border-2 border-dark-border'
                     )}
-                    aria-label="Toggle pump"
                 >
                     <span className={clsx(
-                        'toggle-thumb absolute top-1 w-6 h-6 rounded-full shadow-md',
-                        pumpOn ? 'translate-x-9 bg-white' : 'translate-x-1 bg-white'
-                    )} />
+                        'absolute top-1 w-7 h-7 rounded-full shadow-lg transition-transform duration-300 flex items-center justify-center',
+                        pumpOn ? 'translate-x-11.5 bg-black' : 'translate-x-1.5 bg-white'
+                    )} style={{ transform: pumpOn ? 'translateX(44px)' : 'translateX(4px)' }}>
+                        <span className={clsx('w-1 h-3 rounded-full', pumpOn ? 'bg-neon' : 'bg-gray-300')} />
+                    </span>
                 </button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 mt-4">
+            {/* FLOW RATE BAR */}
+            <div className="mt-6 mb-2">
+                <div className="flex justify-between items-baseline mb-2">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-dark-muted">Flow Rate</span>
+                    </div>
+                    <p className={clsx('text-2xl font-black', pumpOn ? 'text-white' : 'text-dark-muted')}>
+                        {flowRate.toFixed(1)} <span className="text-sm font-bold opacity-60">L/min</span>
+                    </p>
+                </div>
+
+                {/* Health Bar Wrapper */}
+                <div className="w-full h-3 rounded-full bg-dark-bg relative overflow-hidden border border-dark-border">
+                    <div className="absolute top-0 bottom-0 left-[50%] right-[25%] bg-neon/10 border-x border-neon/20 z-0" />
+                    <div
+                        className={clsx('absolute top-0 bottom-0 left-0 transition-all duration-1000 ease-out z-10', flowRate >= 10 && flowRate <= 15 ? 'bg-neon' : (pumpOn ? 'bg-red-500' : 'bg-transparent'))}
+                        style={{ width: `${Math.min((flowRate / 20) * 100, 100)}%` }}
+                    />
+                </div>
+                <div className="flex justify-between text-[9px] font-bold mt-1.5 px-1 tracking-tighter text-dark-muted uppercase">
+                    <span>0</span>
+                    <span className="text-neon opacity-80">10-15 L/m Optimal</span>
+                    <span>20</span>
+                </div>
+            </div>
+
+            {/* Stats Compact Grid */}
+            <div className="grid grid-cols-2 gap-2 mt-4">
                 {[
-                    { icon: Clock, label: 'Runtime Today', val: `${Math.floor(runtime / 60)}h ${runtime % 60}m`, color: '#8b5cf6' },
-                    { icon: DropletIcon, label: 'Water Used', val: '1,764 L', color: '#3b82f6' },
-                    { icon: Zap, label: 'Power Draw', val: '2.4 kW', color: '#f59e0b' },
-                ].map(({ icon: Icon, label, val, color }) => (
-                    <div key={label} className={clsx(
-                        'rounded-xl p-3 text-center',
-                        dark ? 'bg-gray-800/60' : 'bg-gray-50'
-                    )}>
-                        <Icon className="w-4 h-4 mx-auto mb-1" style={{ color }} />
-                        <p className="text-sm font-bold" style={{ color }}>{val}</p>
-                        <p className={clsx('text-xs mt-0.5 leading-tight', dark ? 'text-gray-500' : 'text-gray-400')}>{label}</p>
+                    { label: 'Runtime', val: `${Math.floor(runtimeToday / 60)}h ${Math.floor(runtimeToday % 60)}m`, color: '#39FF14' },
+                    { label: 'Power', val: `${powerDraw} kW`, color: '#39FF14' },
+                ].map(({ label, val, color }) => (
+                    <div key={label} className="bg-dark-bg/60 rounded-xl p-2 border border-dark-border/50 text-center">
+                        <p className="text-lg font-black text-white">{val}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-tighter text-dark-muted mt-0.5 whitespace-pre-line">{label}</p>
                     </div>
                 ))}
             </div>

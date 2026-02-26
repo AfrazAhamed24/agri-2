@@ -39,8 +39,7 @@ export default function MoistureGauge({ value, dark }) {
     const color =
         animated < 30 ? '#ef4444'
             : animated < 50 ? '#f59e0b'
-                : animated < 80 ? '#22c55e'
-                    : '#3b82f6';
+                : '#39FF14';
 
     const bgColor = dark ? '#21262d' : '#e2e8f0';
     const trackPath = describeArc(cx, cy, r, startAngle, endAngle);
@@ -84,20 +83,13 @@ export default function MoistureGauge({ value, dark }) {
                 </div>
             </div>
 
-            {/* Scale labels */}
-            <div className={clsx('flex justify-between w-44 text-xs mt-1', dark ? 'text-gray-500' : 'text-gray-400')}>
-                <span>0%</span>
-                <span>50%</span>
-                <span>100%</span>
+            <div className="flex flex-col items-center mt-4">
+                <span className="text-sm font-bold tracking-tight text-white uppercase">Soil Moisture</span>
             </div>
-            <p className={clsx('text-sm mt-2 font-medium', dark ? 'text-gray-300' : 'text-gray-600')}>
-                Soil Moisture
+
+            <p className="text-[10px] font-bold text-neon mt-1 uppercase tracking-widest opacity-80 transition-opacity">
+                Optimal: 50% - 80%
             </p>
-            <div className={clsx('flex items-center gap-2 mt-2 text-xs', dark ? 'text-gray-500' : 'text-gray-400')}>
-                <span className="w-2 h-2 rounded-full bg-red-500 inline-block" /> &lt;30% Critical
-                <span className="w-2 h-2 rounded-full bg-yellow-400 inline-block" /> 30–50% Low
-                <span className="w-2 h-2 rounded-full bg-green-500 inline-block" /> 50–80% Optimal
-            </div>
         </div>
     );
 }

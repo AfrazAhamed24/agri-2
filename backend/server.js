@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 app.use(cors());
@@ -18,6 +18,7 @@ if (!process.env.OPENAI_API_KEY) {
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
 
 // Health check endpoint
@@ -30,7 +31,7 @@ app.get("/test-openai", async (req, res) => {
   try {
     console.log("Testing OpenAI API...");
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gemini-2.5-flash",
       messages: [{ role: "user", content: "Hello" }],
     });
     res.json({ success: true, message: completion.choices[0].message.content });
@@ -52,7 +53,7 @@ app.post("/chat", async (req, res) => {
 
   try {
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gemini-2.5-flash",
       messages: [
         {
           role: "system",

@@ -1,54 +1,56 @@
 import { clsx } from 'clsx';
 import {
     ResponsiveContainer, AreaChart, Area, BarChart, Bar,
-    XAxis, YAxis, CartesianGrid, Tooltip, Legend
+    XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceArea, ReferenceLine
 } from 'recharts';
 import { useState } from 'react';
 
-const tabs = ['Moisture', 'Temperature', 'Humidity', 'Rainfall'];
+const tabs = [
+    { en: 'Moisture' },
+    { en: 'Temperature' },
+    { en: 'Humidity' },
+    { en: 'Rainfall' }
+];
 
-const CustomTooltip = ({ active, payload, label, dark }) => {
+const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload?.length) return null;
     return (
-        <div className={clsx(
-            'rounded-xl px-3 py-2 border text-xs shadow-xl',
-            dark ? 'bg-[#161b22] border-[#21262d] text-white' : 'bg-white border-gray-200 text-gray-800'
-        )}>
-            <p className="font-semibold mb-1">{label}</p>
+        <div className="rounded-xl px-3 py-2 border border-dark-border bg-dark-card text-white text-xs shadow-2xl">
+            <p className="font-black mb-1 flex items-baseline gap-2">
+                <span>{label}</span>
+                <span className="text-[10px] text-neon opacity-70 italic">{(payload[0].dataKey).toUpperCase()}</span>
+            </p>
             {payload.map((p) => (
-                <p key={p.dataKey} style={{ color: p.color }}>
-                    {p.name}: <strong>{p.value}{p.unit}</strong>
+                <p key={p.dataKey} className="font-bold">
+                    {p.value}<span className="text-[9px] ml-0.5 opacity-60 uppercase">{p.unit}</span>
                 </p>
             ))}
         </div>
     );
 };
 
-export default function HistoricalCharts({ data, dark }) {
+export default function HistoricalCharts({ data }) {
     const [activeTab, setActiveTab] = useState('Moisture');
     const [range, setRange] = useState('24H');
 
     const displayData = range === '6H' ? data.slice(-6) : range === '12H' ? data.slice(-12) : data;
 
     return (
-        <div className={clsx(
-            'rounded-2xl p-5 glass',
-            dark ? 'bg-[#161b22]/80 border border-[#21262d]' : 'bg-white/70 border border-white/60'
-        )}>
+        <div className="rounded-2xl p-5 border border-dark-border bg-dark-card transition-all duration-200 overflow-hidden shadow-xl">
             {/* Header */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <h3 className={clsx('text-sm font-semibold uppercase tracking-wide', dark ? 'text-gray-400' : 'text-gray-500')}>
-                    Historical Data
-                </h3>
+                <div className="flex flex-col">
+                    <span className="text-xs font-bold uppercase tracking-widest text-dark-muted">Historical Data</span>
+                </div>
+
                 <div className="flex items-center gap-2">
-                    {/* Range selector */}
                     {['6H', '12H', '24H'].map(r => (
                         <button key={r} onClick={() => setRange(r)}
                             className={clsx(
-                                'px-2.5 py-1 rounded-lg text-xs font-semibold transition-all',
+                                'px-3 py-1 rounded-lg text-[10px] font-black tracking-widest transition-all',
                                 range === r
-                                    ? 'bg-green-500 text-white'
-                                    : dark ? 'bg-gray-800 text-gray-400 hover:text-white' : 'bg-gray-100 text-gray-500 hover:text-gray-700'
+                                    ? 'bg-neon text-black'
+                                    : 'bg-dark-bg text-dark-muted hover:text-white border border-dark-border'
                             )}>
                             {r}
                         </button>
@@ -57,67 +59,69 @@ export default function HistoricalCharts({ data, dark }) {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-1 mb-4 flex-wrap">
+            <div className="flex gap-1 mb-6 flex-wrap">
                 {tabs.map(tab => (
-                    <button key={tab} onClick={() => setActiveTab(tab)}
+                    <button key={tab.en} onClick={() => setActiveTab(tab.en)}
                         className={clsx(
-                            'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
-                            activeTab === tab
-                                ? dark ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-green-100 text-green-700 border border-green-300'
-                                : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+                            'px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase transition-all flex flex-col items-center border',
+                            activeTab === tab.en
+                                ? 'bg-neon/10 border-neon text-neon'
+                                : 'border-dark-border text-dark-muted hover:border-white/20'
                         )}>
-                        {tab}
+                        <span>{tab.en}</span>
                     </button>
                 ))}
             </div>
 
             {/* Charts */}
-            <div className="h-52">
+            <div className="h-[40vh] min-h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                     {activeTab === 'Rainfall' ? (
-                        <BarChart data={displayData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#21262d' : '#f1f5f9'} />
-                            <XAxis dataKey="time" tick={{ fill: dark ? '#6b7280' : '#94a3b8', fontSize: 10 }}
+                        <BarChart data={displayData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1e1e1e" vertical={false} />
+                            <XAxis dataKey="time" tick={{ fill: '#666', fontSize: 10, fontWeight: 800 }}
                                 tickLine={false} axisLine={false} interval={Math.floor(displayData.length / 6)} />
-                            <YAxis tick={{ fill: dark ? '#6b7280' : '#94a3b8', fontSize: 10 }}
+                            <YAxis tick={{ fill: '#666', fontSize: 10, fontWeight: 800 }}
                                 tickLine={false} axisLine={false} />
-                            <Tooltip content={<CustomTooltip dark={dark} />} />
-                            <Bar dataKey="rainfall" name="Rainfall" unit="mm" fill="#3b82f6"
+                            <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                            <Bar dataKey="rainfall" name="Rainfall" unit="mm" fill="#39FF14"
                                 radius={[4, 4, 0, 0]} />
                         </BarChart>
                     ) : (
-                        <AreaChart data={displayData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+                        <AreaChart data={displayData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                             <defs>
-                                <linearGradient id="gradMoisture" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                                </linearGradient>
-                                <linearGradient id="gradTemp" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                                </linearGradient>
-                                <linearGradient id="gradHumidity" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                <linearGradient id="gradNeon" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#39FF14" stopOpacity={0.2} />
+                                    <stop offset="95%" stopColor="#39FF14" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke={dark ? '#21262d' : '#f1f5f9'} />
-                            <XAxis dataKey="time" tick={{ fill: dark ? '#6b7280' : '#94a3b8', fontSize: 10 }}
+                            <CartesianGrid strokeDasharray="3 3" stroke="#1e1e1e" vertical={false} />
+                            <XAxis dataKey="time" tick={{ fill: '#666', fontSize: 10, fontWeight: 800 }}
                                 tickLine={false} axisLine={false} interval={Math.floor(displayData.length / 6)} />
-                            <YAxis tick={{ fill: dark ? '#6b7280' : '#94a3b8', fontSize: 10 }}
+                            <YAxis tick={{ fill: '#666', fontSize: 10, fontWeight: 800 }}
                                 tickLine={false} axisLine={false} />
-                            <Tooltip content={<CustomTooltip dark={dark} />} />
+                            <Tooltip content={<CustomTooltip />} />
+
                             {activeTab === 'Moisture' && (
-                                <Area dataKey="moisture" name="Moisture" unit="%" stroke="#22c55e"
-                                    strokeWidth={2} fill="url(#gradMoisture)" dot={false} />
+                                <>
+                                    <ReferenceArea y1={50} y2={80} fill="#39FF14" fillOpacity={0.05} />
+                                    {displayData.map((d, i) => {
+                                        if (d.moisture < 40 && i % 4 === 0) {
+                                            return <ReferenceLine key={i} x={d.time} stroke="#39FF14" strokeWidth={1} strokeDasharray="5 5" strokeOpacity={0.3} />;
+                                        }
+                                        return null;
+                                    })}
+                                    <Area dataKey="moisture" name="Moisture" unit="%" stroke="#39FF14"
+                                        strokeWidth={3} fill="url(#gradNeon)" dot={false} />
+                                </>
                             )}
                             {activeTab === 'Temperature' && (
                                 <Area dataKey="temperature" name="Temp" unit="°C" stroke="#f59e0b"
-                                    strokeWidth={2} fill="url(#gradTemp)" dot={false} />
+                                    strokeWidth={3} fill="url(#gradNeon)" dot={false} />
                             )}
                             {activeTab === 'Humidity' && (
-                                <Area dataKey="humidity" name="Humidity" unit="%" stroke="#3b82f6"
-                                    strokeWidth={2} fill="url(#gradHumidity)" dot={false} />
+                                <Area dataKey="humidity" name="Humidity" unit="%" stroke="#39FF14"
+                                    strokeWidth={3} fill="url(#gradNeon)" dot={false} />
                             )}
                         </AreaChart>
                     )}

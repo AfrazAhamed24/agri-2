@@ -21,25 +21,23 @@ export default function WaterTank({ level, dark }) {
     const color =
         animated < 25 ? '#ef4444'
             : animated < 45 ? '#f59e0b'
-                : '#22c55e';
+                : '#39FF14';
 
     const statusLabel =
-        animated < 25 ? 'Critical – Refill Now'
-            : animated < 45 ? 'Low – Schedule Refill'
+        animated < 25 ? 'Critical'
+            : animated < 45 ? 'Low'
                 : 'Tank Level OK';
 
     return (
-        <div className={clsx(
-            'rounded-2xl p-5 glass card-hover',
-            dark ? 'bg-[#161b22]/80 border border-[#21262d]' : 'bg-white/70 border border-white/60'
-        )}>
+        <div className="rounded-2xl p-5 border border-dark-border bg-dark-card transition-all duration-200 overflow-hidden shadow-xl h-full">
             <div className="flex items-center justify-between mb-4">
-                <div>
-                    <h3 className={clsx('text-sm font-semibold uppercase tracking-wide', dark ? 'text-gray-400' : 'text-gray-500')}>
-                        Water Tank
-                    </h3>
-                    <p className="text-2xl font-bold mt-0.5" style={{ color }}>
-                        {animated}<span className="text-base ml-0.5">%</span>
+                <div className="flex flex-col">
+                    <span className="text-xs font-bold uppercase tracking-widest text-dark-muted">Water Tank</span>
+                    <p className="text-3xl font-black mt-2 text-white">
+                        {animated}<span className="text-lg ml-0.5 opacity-60">%</span>
+                    </p>
+                    <p className="text-[10px] font-bold text-neon mt-1 uppercase tracking-tighter opacity-70">
+                        Normal: {'>'}45%
                     </p>
                 </div>
                 {/* Mini tank icon */}
@@ -93,18 +91,14 @@ export default function WaterTank({ level, dark }) {
                 <span className="text-xs font-medium" style={{ color }}>{statusLabel}</span>
             </div>
 
-            <div className={clsx('grid grid-cols-3 gap-2 mt-4 text-center')}>
+            <div className="grid grid-cols-2 gap-2 mt-4">
                 {[
-                    { label: 'Capacity', val: '5,000 L' },
                     { label: 'Available', val: `${Math.round(level * 50)} L` },
-                    { label: 'Flow Rate', val: '12 L/min' },
+                    { label: 'Flow', val: '12 L/m' },
                 ].map(({ label, val }) => (
-                    <div key={label} className={clsx(
-                        'rounded-xl py-2 px-1',
-                        dark ? 'bg-gray-800/60' : 'bg-gray-50'
-                    )}>
-                        <p className="text-base font-bold" style={{ color }}>{val}</p>
-                        <p className={clsx('text-xs mt-0.5', dark ? 'text-gray-500' : 'text-gray-400')}>{label}</p>
+                    <div key={label} className="bg-dark-bg/60 rounded-xl p-2 border border-dark-border/50 text-center">
+                        <p className="text-lg font-black text-white">{val}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-tighter text-dark-muted mt-0.5 whitespace-pre-line">{label}</p>
                     </div>
                 ))}
             </div>
