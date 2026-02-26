@@ -115,21 +115,30 @@ POST /api/chat
 
 ## 🌐 Deployment
 
-### Frontend (Vercel)
-```bash
-cd frontend
-vercel deploy
-```
+**📖 For complete deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md)**
 
-### Backend (Vercel)
-```bash
-cd backend
-vercel deploy
-```
+### Quick Deploy Steps
 
-Set environment variables in Vercel dashboard:
-- `OPENAI_API_KEY` - Your API key
-- `VITE_API_URL` - Your backend URL (for frontend)
+#### Backend (Vercel)
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Import your GitHub repository
+3. Set Root Directory to `backend`
+4. Add environment variables:
+   - `OPENAI_API_KEY`
+   - `NODE_ENV=production`
+   - `PORT=5000`
+5. Deploy
+
+#### Frontend (Vercel)
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Import your GitHub repository again
+3. Set Root Directory to `frontend`
+4. Framework: Vite
+5. Add environment variable:
+   - `VITE_API_URL=<your-backend-url>`
+6. Deploy
+
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed step-by-step instructions, troubleshooting, and CLI deployment options.**
 
 ## 🛠️ Tech Stack
 
