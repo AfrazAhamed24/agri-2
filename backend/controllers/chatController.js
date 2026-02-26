@@ -1,17 +1,17 @@
 import process from "process";
 import OpenAI from "openai";
 
-if (!process.env.OPENAI_API_KEY) {
-  console.error("❌ ERROR: OPENAI_API_KEY not found in .env file");
-  process.exit(1);
-}
-
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
 });
 
 export const chatController = async (req, res) => {
+  if (!process.env.OPENAI_API_KEY) {
+    console.error("❌ ERROR: OPENAI_API_KEY not found in environment variables");
+    return res.status(500).json({ error: "API key not configured" });
+  }
+
   const { message, sensorContext } = req.body;
 
   if (!message) {

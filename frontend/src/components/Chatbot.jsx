@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { clsx } from 'clsx';
 import { X, Minus, Plus, Bot, Send } from 'lucide-react';
+import { chatWithAI } from '../utils/api';
 
 const RobotAvatar = () => (
     <svg viewBox="0 0 200 200" className="w-[85%] h-[85%] text-green-500 drop-shadow-sm transition-all duration-300">
@@ -71,16 +72,7 @@ export default function Chatbot({ sensorContext }) {
         setTyping(true);
 
         try {
-            const res = await fetch("http://localhost:5000/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    message: userText,
-                    sensorContext
-                })
-            });
-
-            const data = await res.json();
+            const data = await chatWithAI(userText, sensorContext);
 
             setMessages(prev => [
                 ...prev,

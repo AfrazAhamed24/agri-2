@@ -30,7 +30,7 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error("❌ Error:", err.message);
   res.status(500).json({
     error: err.message || "Internal server error",
@@ -38,8 +38,15 @@ app.use((err, req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📝 Chat endpoint: POST http://localhost:${PORT}/api/chat`);
-  console.log(`✅ Health check: GET http://localhost:${PORT}/health`);
-});
+
+// For Vercel serverless
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📝 Chat endpoint: POST http://localhost:${PORT}/api/chat`);
+    console.log(`✅ Health check: GET http://localhost:${PORT}/health`);
+  });
+}
