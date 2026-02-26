@@ -14,11 +14,14 @@ export const chatWithAI = async (message, sensorContext) => {
             }),
         });
 
+        const data = await response.json();
+        
+        // Return data regardless of status - let caller handle errors
         if (!response.ok) {
-            throw new Error('API Error: ' + response.statusText);
+            return { error: data.error || `HTTP ${response.status}: ${response.statusText}` };
         }
 
-        return await response.json();
+        return data;
     } catch (error) {
         console.error('Chat API error:', error);
         throw error;

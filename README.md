@@ -162,7 +162,7 @@ POST /api/chat
 - ✅ Smart pump control
 - ✅ Historical data charts
 - ✅ AI-powered recommendations
-- ✅ Tamil language chatbot (Majaa)
+- ✅ Tamil language chatbot (Zea)
 - ✅ Multi-field management
 - ✅ Alert system
 

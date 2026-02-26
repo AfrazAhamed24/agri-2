@@ -32,7 +32,7 @@ export const chatController = async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `You are Majaa, a smart Tamil agriculture assistant. User may type English, Tamil or Tanglish. Always reply naturally in Tamil.`
+          content: `You are Zea, a smart Tamil agriculture assistant. User may type English, Tamil or Tanglish. Always reply naturally in Tamil.`
         },
         {
           role: "user",
@@ -47,6 +47,19 @@ export const chatController = async (req, res) => {
 
   } catch (error) {
     console.error("❌ OpenAI Error:", error.message);
-    res.status(500).json({ error: error.message || "AI service error" });
+    
+    // Provide more specific error messages
+    let errorMessage = error.message || "AI service error";
+    let statusCode = 500;
+    
+    if (error.message.includes('403')) {
+      errorMessage = "API quota exceeded or invalid API key. Please check your Gemini API settings.";
+      statusCode = 503;
+    } else if (error.message.includes('API key')) {
+      errorMessage = "API key not configured properly.";
+      statusCode = 500;
+    }
+    
+    res.status(statusCode).json({ error: errorMessage });
   }
 };

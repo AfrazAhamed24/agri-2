@@ -42,7 +42,7 @@ export default function Chatbot({ sensorContext }) {
     const [messages, setMessages] = useState([
         {
             from: 'bot',
-            text: `Hi! I'm Majaa. How can I help you today?`,
+            text: `Hi! I'm Zea, your agriculture assistant. How can I help you today?`,
             time: new Date()
         }
     ]);
@@ -74,17 +74,38 @@ export default function Chatbot({ sensorContext }) {
         try {
             const data = await chatWithAI(userText, sensorContext);
 
-            setMessages(prev => [
-                ...prev,
-                { from: 'bot', text: data.reply, time: new Date() }
-            ]);
+            if (data.error) {
+                // Handle specific API errors
+                let errorMessage = "⚠️ I'm having trouble connecting to my AI brain. ";
+                if (data.error.includes('403')) {
+                    errorMessage += "The API quota might be exceeded. Please check your API key.";
+                } else {
+                    errorMessage += `Error: ${data.error}`;
+                }
+                setMessages(prev => [
+                    ...prev,
+                    { from: 'bot', text: errorMessage, time: new Date() }
+                ]);
+            } else if (data.reply) {
+                setMessages(prev => [
+                    ...prev,
+                    { from: 'bot', text: data.reply, time: new Date() }
+                ]);
+            }
 
         } catch (error) {
+            console.error('Chat error:', error);
+            let errorMessage = "⚠️ Unable to connect to server. ";
+            if (error.message.includes('Failed to fetch')) {
+                errorMessage += "Make sure the backend is running on http://localhost:5000";
+            } else {
+                errorMessage += error.message;
+            }
             setMessages(prev => [
                 ...prev,
                 {
                     from: 'bot',
-                    text: "⚠️ Server error. Please check backend connection.",
+                    text: errorMessage,
                     time: new Date()
                 }
             ]);
@@ -120,7 +141,7 @@ export default function Chatbot({ sensorContext }) {
                     </div>
                     <div className="flex items-center gap-2">
                         <Bot size={20} className="text-green-600" />
-                        <h2 className="text-green-800 text-base font-semibold tracking-wide uppercase">Assistant</h2>
+                        <h2 className="text-green-800 text-base font-semibold tracking-wide uppercase">Zea</h2>
                     </div>
                 </div>
 
