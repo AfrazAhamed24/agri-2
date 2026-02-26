@@ -1,17 +1,22 @@
 import process from "process";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-  baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
-});
+let openai;
+
+const getOpenAIClient = () => {
+  if (!openai) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error("OPENAI_API_KEY not configured");
+    }
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    });
+  }
+  return openai;
+};
 
 export const chatController = async (req, res) => {
-  if (!process.env.OPENAI_API_KEY) {
-    console.error("❌ ERROR: OPENAI_API_KEY not found in environment variables");
-    return res.status(500).json({ error: "API key not configured" });
-  }
-
   const { message, sensorContext } = req.body;
 
   if (!message) {
@@ -21,7 +26,8 @@ export const chatController = async (req, res) => {
   console.log("📩 Received message:", message);
 
   try {
-    const completion = await openai.chat.completions.create({
+    const client = getOpenAIClient();
+    const completion = await client.chat.completions.create({
       model: "gemini-2.5-flash",
       messages: [
         {
