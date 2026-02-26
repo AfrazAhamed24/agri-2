@@ -8,9 +8,28 @@ dotenv.config({ override: true });
 
 const app = express();
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Root endpoint
+app.get("/", (req, res) => {
+  res.json({
+    name: "Agricultural IoT API",
+    version: "1.0.0",
+    status: "running",
+    endpoints: {
+      health: "GET /health",
+      chat: "POST /api/chat"
+    }
+  });
+});
 
 // Health check endpoint
 app.get("/health", (req, res) => {
@@ -26,7 +45,17 @@ app.use("/api/chat", chatRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+  console.log(`❌ 404 - Route not found: ${req.method} ${req.path}`);
+  res.status(404).json({ 
+    error: "Route not found",
+    path: req.path,
+    method: req.method,
+    availableEndpoints: {
+      root: "GET /",
+      health: "GET /health",
+      chat: "POST /api/chat"
+    }
+  });
 });
 
 // Error handler
